@@ -45,7 +45,6 @@ export default function ChargementPage() {
           {[
             { label: 'Couverture',  val: couv,  set: setCouv,  min: 0.05, max: 0.5,  step: 0.05 },
             { label: 'Bardage',     val: bard,  set: setBard,  min: 0.05, max: 0.4,  step: 0.05 },
-            { label: 'Charpente',   val: charp, set: setCharp, min: 0.10, max: 0.6,  step: 0.05 },
           ].map(({ label, val, set, min, max, step }) => (
             <div className="mod-charge-row" key={label}>
               <div className="mod-charge-name">{label}</div>
@@ -72,7 +71,7 @@ export default function ChargementPage() {
 
           {[
             { label: 'Entretien',          val: entr, set: setEntr, min: 0.25, max: 2.0, step: 0.25 },
-            { label: 'Poussière / neige',  val: pous, set: setPous, min: 0.0,  max: 1.0, step: 0.1  },
+            { label: 'Poussière ',  val: pous, set: setPous, min: 0.0,  max: 1.0, step: 0.1  },
             { label: 'Charge utile toiture',val: util, set: setUtil, min: 0.25, max: 3.0, step: 0.25 },
           ].map(({ label, val, set, min, max, step }) => (
             <div className="mod-charge-row" key={label}>

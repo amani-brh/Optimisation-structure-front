@@ -46,11 +46,7 @@ export default function App() {
 
         <div className="tbsep" />
 
-        <div className="tbpills">
-          <span className="tbpill on">EN 1991-1-4</span>
-          <span className="tbpill">EC1 · EC3</span>
-          <span className="tbpill">Charpente Métallique</span>
-        </div>
+        
 
         <div className="tabnav">
           <NavLink
