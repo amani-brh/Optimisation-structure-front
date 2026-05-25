@@ -7,6 +7,7 @@ import ChargementPage from './pages/ChargementPage';
 import CalculPage from './pages/CalculPage';
 import RSAExportPage from './pages/RSAExportPage';
 import OptimisationPage from './pages/OptimisationPage';
+import PropositionPage from './pages/PropositionPage';
 import Sidebar from './components/Sidebar';
 
 type Theme = 'light' | 'dark';
@@ -74,6 +75,16 @@ export default function App() {
             </svg>
             Calcul du vent
           </NavLink>
+          <NavLink
+            to="/proposition"
+            className={({ isActive }) => 'tabbtn' + (isActive ? ' active' : '')}
+          >
+            <svg width="12" height="12" viewBox="0 0 11 11" fill="none">
+              <path d="M2 9L5.5 2 9 9" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M3 7h5" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" />
+            </svg>
+            Proposition des dimensions optimales
+          </NavLink>
         </div>
 
         <div className="tbright">
@@ -107,6 +118,7 @@ export default function App() {
             <Route path="/calcul" element={<CalculPage />} />
             <Route path="/rsa" element={<RSAExportPage />} />
             <Route path="/optimisation" element={<OptimisationPage />} />
+            <Route path="/proposition" element={<PropositionPage />} />
             <Route path="*" element={<Navigate to="/optimisations" replace />} />
           </Routes>
         </main>
