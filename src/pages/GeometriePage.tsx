@@ -4,6 +4,9 @@ import { useStructure } from './StructureContext';
 export default function GeometriePage() {
   const { L, H, setL, setH } = useStructure();
   const [saved, setSaved] = useState(false);
+  const [alpha, setAlpha] = useState(11.31);
+
+  const ht = (L / 2) * Math.tan((alpha * Math.PI) / 180);
 
   return (
     <div className="mod-page">
@@ -45,8 +48,8 @@ export default function GeometriePage() {
 
           <div className="mod-field">
             <label className="mod-field-label">Hauteur au faîtage ht</label>
-            <input type="number" className="mod-field-input" defaultValue={8} />
-            <div className="mod-field-unit">mètres totale</div>
+            <input type="number" className="mod-field-input" value={ht.toFixed(3)} readOnly />
+            <div className="mod-field-unit">mètres totale — (L/2) × tg(α)</div>
           </div>
 
           <div className="mod-field">
@@ -66,7 +69,13 @@ export default function GeometriePage() {
 
           <div className="mod-field">
             <label className="mod-field-label">Pente de toiture α</label>
-            <input type="number" className="mod-field-input" defaultValue={11.31} step={0.5} />
+            <input
+              type="number"
+              className="mod-field-input"
+              value={alpha}
+              step={0.5}
+              onChange={(e) => { setAlpha(Number(e.target.value)); setSaved(false); }}
+            />
             <div className="mod-field-unit">degrés — arctan((h₂−h₁) / (L/2))</div>
           </div>
 
