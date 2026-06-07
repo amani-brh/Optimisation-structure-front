@@ -15,7 +15,7 @@ export default function Sidebar() {
       <div className="sb-section">
         <div className="sb-label">Navigation</div>
         <NavLink
-          to="/optimisations"
+          to="/"
           className={({ isActive }) => 'nav-item' + (isActive ? ' active' : '')}
         >
           <span className="nav-icon">⌂</span>

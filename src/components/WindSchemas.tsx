@@ -239,8 +239,6 @@ function buildCrossSection(p: Props, isDark: boolean): string {
     <path d="M ${x0 + arcR},${yH} A ${arcR} ${arcR} 0 0 1 ${pBx.toFixed(1)},${pBy.toFixed(1)}" fill="none" stroke="${T}" stroke-width="1.5"/>
     <text x="${x0 + arcR * 1.3}" y="${yH - arcR * 0.4}" font-family="JetBrains Mono,monospace" font-size="10" fill="${T}">α=${adeg.toFixed(2)}°</text>
 
-    <text x="${x0 + 8}" y="${yH - 4}" font-family="JetBrains Mono,monospace" font-size="9" fill="${M}" opacity=".85">D (face vent)</text>
-    <text x="${x0 + pxB - 6}" y="${yH - 4}" font-family="JetBrains Mono,monospace" font-size="9" fill="${D}" text-anchor="end" opacity=".85">E (sous vent)</text>
 
     <line x1="${x0 - 82}" y1="${yH + pxH * 0.38}" x2="${x0 - 5}" y2="${yH + pxH * 0.38}" stroke="${W}" stroke-width="3" marker-end="url(#aw)"/>
     <text x="${x0 - 44}" y="${yH + pxH * 0.38 - 16}" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" font-weight="700" fill="${W}">Vent</text>

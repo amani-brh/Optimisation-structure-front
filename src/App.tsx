@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { NavLink, Route, Routes, Navigate } from 'react-router-dom';
+import HomePage from './pages/HomePage';
 import OptimizationsPage from './pages/OptimizationsPage';
 import WindCalcPage from './pages/WindCalcPage';
 import GeometriePage from './pages/GeometriePage';
@@ -109,7 +110,7 @@ export default function App() {
 
         <main className="app-main">
           <Routes>
-            <Route path="/" element={<Navigate to="/optimisations" replace />} />
+            <Route path="/" element={<HomePage />} />
             <Route path="/optimisations" element={<OptimizationsPage />} />
             <Route path="/optimisations/:id" element={<OptimizationsPage />} />
             <Route path="/vent" element={<WindCalcPage />} />
@@ -117,7 +118,7 @@ export default function App() {
             <Route path="/chargement" element={<ChargementPage />} />
             <Route path="/calcul" element={<CalculPage />} />
             <Route path="/rsa" element={<RSAExportPage />} />
-            <Route path="/optimisation" element={<OptimisationPage />} />
+            <Route path="/optimisation" element={<OptimizationsPage />} />
             <Route path="/proposition" element={<PropositionPage />} />
             <Route path="*" element={<Navigate to="/optimisations" replace />} />
           </Routes>
