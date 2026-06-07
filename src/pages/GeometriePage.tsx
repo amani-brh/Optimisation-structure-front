@@ -88,14 +88,7 @@ export default function GeometriePage() {
             </select>
           </div>
 
-          <div className="mod-field">
-            <label className="mod-field-label">Classe de conséquence</label>
-            <select className="mod-field-select">
-              <option>CC1 — Faible</option>
-              <option>CC2 — Normal</option>
-              <option>CC3 — Élevé</option>
-            </select>
-          </div>
+     
 
           <div className="mod-btn-group">
             <button className="mod-btn mod-btn-primary" onClick={() => setSaved(true)}>
