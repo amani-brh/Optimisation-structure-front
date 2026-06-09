@@ -37,6 +37,7 @@ export default function TaskButton({ task, fullCmd }: Props) {
   const [status, setStatus] = useState<Status>('idle');
   const [log, setLog] = useState('');
   const [copied, setCopied] = useState(false);
+  const [args, setArgs] = useState('');
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const c = COLOR[task.color];
@@ -51,11 +52,26 @@ export default function TaskButton({ task, fullCmd }: Props) {
       try {
         const r = await fetch(`${TASK_RUNNER_URL}/status/${task.id}`);
         const d = await r.json();
+        console.log(`[TaskButton] Poll ${task.id}: status=${d.status}`, d);
         if (d.status === 'running') { setStatus('running'); }
-        else if (d.status === 'done') { setStatus('done'); setLog(''); stopPolling(); }
-        else if (d.status === 'error') { setStatus('error'); setLog(`Exit code ${d.exitCode}`); stopPolling(); }
+        else if (d.status === 'done') { 
+          setStatus('done'); 
+          setLog('Success ✓'); 
+          stopPolling(); 
+          console.log(`[TaskButton] Task completed successfully`); 
+        }
+        else if (d.status === 'error') { 
+          setStatus('error');
+          const errMsg = d.stderr ? `Python Error:\n${d.stderr}` : `Exit code ${d.exitCode}`;
+          setLog(errMsg);
+          stopPolling();
+          console.error(`[TaskButton] Task failed:`, d);
+        }
         else { stopPolling(); }
-      } catch { stopPolling(); }
+      } catch (err) { 
+        console.error(`[TaskButton] Poll error:`, err);
+        stopPolling(); 
+      }
     }, 1200);
   };
 
@@ -65,19 +81,36 @@ export default function TaskButton({ task, fullCmd }: Props) {
     if (status === 'running' || status === 'starting') return;
     setStatus('starting');
     setLog('');
+    console.log(`[TaskButton] Starting task: ${task.id}${args ? ` with args: ${args}` : ''}`);
     try {
-      const r = await fetch(`${TASK_RUNNER_URL}/run/${task.id}`, { method: 'POST' });
+      console.log(`[TaskButton] Sending request to ${TASK_RUNNER_URL}/run/${task.id}`);
+      
+      // Parse args (space-separated or quoted)
+      const argsArray = args.trim() ? args.trim().split(/\s+/) : [];
+      const body = argsArray.length > 0 ? JSON.stringify({ args: argsArray }) : undefined;
+      
+      const r = await fetch(`${TASK_RUNNER_URL}/run/${task.id}`, { 
+        method: 'POST',
+        headers: body ? { 'Content-Type': 'application/json' } : {},
+        body: body,
+      });
+      console.log(`[TaskButton] Response status: ${r.status}`);
       const d = await r.json();
+      console.log(`[TaskButton] Response data:`, d);
       if (d.status === 'started' || d.status === 'already-running') {
         setStatus('running');
+        console.log(`[TaskButton] Task started, polling for status...`);
         startPolling();
       } else {
         setStatus('error');
         setLog(d.error ?? 'Unknown error');
+        console.error(`[TaskButton] Task error:`, d.error);
       }
-    } catch {
+    } catch (err) {
       setStatus('offline');
-      setLog('Task runner not reachable — run: npm run tasks');
+      const msg = 'Task runner not reachable — run: npm run tasks';
+      setLog(msg);
+      console.error(`[TaskButton] Network error:`, err, msg);
     }
   };
 
@@ -144,6 +177,25 @@ export default function TaskButton({ task, fullCmd }: Props) {
           {log}
         </div>
       )}
+
+      {/* Arguments input (optional) */}
+      <input
+        type="text"
+        placeholder="Arguments (e.g. --selftest)"
+        value={args}
+        onChange={(e) => setArgs(e.target.value)}
+        disabled={status === 'running' || status === 'starting'}
+        style={{
+          fontFamily: 'var(--fm)',
+          fontSize: 10,
+          padding: '4px 8px',
+          borderRadius: 'var(--r1)',
+          border: '1px solid var(--bd)',
+          background: 'var(--bg3)',
+          color: 'var(--tx3)',
+          outline: 'none',
+        }}
+      />
 
       {/* Action buttons */}
       <div style={{ display: 'flex', gap: 6, marginTop: 2 }}>
