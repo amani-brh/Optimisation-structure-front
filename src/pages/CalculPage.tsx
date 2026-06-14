@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useStructure } from './StructureContext';
 
 type Status = '—' | 'OK' | 'NOK';
@@ -16,7 +17,7 @@ const FY_MAP: Record<string, number> = {
   S355: 355,
 };
 
-function buildInitialChecks(fy: number): Check[] {
+function buildInitialChecks(_fy: number): Check[] {
   return [
     { label: 'Résistance flexion',      value: '—', limit: '1.00', status: '—' },
     { label: 'Résistance cisaillement', value: '—', limit: '1.00', status: '—' },
@@ -42,6 +43,7 @@ function StatusTag({ s }: { s: Status }) {
 
 export default function CalculPage() {
   const { L, H } = useStructure();
+  const navigate = useNavigate();
 
   const [nuance, setNuance] = useState<string>('S275');
   const [checks, setChecks] = useState<Check[]>(buildInitialChecks(FY_MAP['S275']));
@@ -217,10 +219,10 @@ export default function CalculPage() {
               <div className="mod-metric-value" style={{ color: 'var(--em)' }}>0.82</div>
               <div className="mod-metric-unit">≤ 1.00 ✓</div>
             </div>
-            <div className="mod-metric">
+            <div className="mod-metric" style={{ cursor: 'pointer' }} onClick={() => navigate('/flambement')}>
               <div className="mod-metric-label">Flambement</div>
-              <div className="mod-metric-value" style={{ color: 'var(--am)' }}>0.91</div>
-              <div className="mod-metric-unit">≤ 1.00 ✓</div>
+              <div className="mod-metric-value" style={{ color: 'var(--cy)', fontSize: 13 }}>Vérifier →</div>
+              <div className="mod-metric-unit">EC3 §6.3.1</div>
             </div>
             <div className="mod-metric">
               <div className="mod-metric-label">Limite élastique</div>

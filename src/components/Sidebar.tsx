@@ -5,7 +5,7 @@ const modules = [
   { to: '/chargement',  icon: '↓', label: 'Charges & Surcharges', badge: 'EC1', badgeClass: 'blue' },
   { to: '/vent',        icon: '🌬', label: 'Calcul du vent',       badge: 'EC1', badgeClass: 'blue' },
   { to: '/calcul',      icon: '∑', label: 'Calcul structurel' },
-  { to: '/rsa',         icon: '▶', label: 'Export RSA' },
+  { to: '/flambement', icon: 'χ', label: 'Flambement EC3',    badge: 'EC3', badgeClass: 'blue' },
   { to: '/optimisation',icon: '◈', label: 'Optimisation',          badge: 'AI' },
 ];
 

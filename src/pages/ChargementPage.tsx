@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-type TabId = 'perm' | 'expl' | 'combis';
+type TabId = 'perm' | 'expl' | 'combis' | 'clim';
 
 export default function ChargementPage() {
   const [tab, setTab] = useState<TabId>('perm');
@@ -11,6 +11,8 @@ export default function ChargementPage() {
   const [pous, setPous]   = useState(0.20);
   const [util, setUtil]   = useState(1.00);
 
+  const [temp, setTemp]   = useState(25);
+
   const totalG = couv + bard + charp;
   const totalQ = entr + pous + util;
 
@@ -20,12 +22,6 @@ export default function ChargementPage() {
       <div className="mod-title">Module Charges &amp; Surcharges</div>
       <div className="mod-sub">// Eurocode 1 — Actions sur les structures — NF EN 1991</div>
 
-      <div className="mod-alert mod-alert-info">
-        Calcul selon <strong>NF EN 1991</strong> (Eurocode 1). Utilisez le module{' '}
-        <a href="/vent" style={{ color: 'var(--cy)', textDecoration: 'underline' }}>Calcul du vent</a>{' '}
-        pour le détail EC1-1-4.
-      </div>
-
       <div className="mod-tabs">
         <div className={`mod-tab${tab === 'perm'   ? ' active' : ''}`} onClick={() => setTab('perm')}>
           ⚖ Charges permanentes G
@@ -33,9 +29,13 @@ export default function ChargementPage() {
         <div className={`mod-tab${tab === 'expl'   ? ' active' : ''}`} onClick={() => setTab('expl')}>
           🏗 Surcharges d'exploitation Q
         </div>
+        <div className={`mod-tab${tab === 'clim' ? ' active' : ''}`} onClick={() => setTab('clim')}>
+          🌬 Charges climatiques
+        </div>
         <div className={`mod-tab${tab === 'combis' ? ' active' : ''}`} onClick={() => setTab('combis')}>
           🔗 Combinaisons EC0
         </div>
+
       </div>
 
       {tab === 'perm' && (
@@ -89,6 +89,35 @@ export default function ChargementPage() {
           <div className="mod-total-row">
             <span>Σ Q exploitation :</span>
             <span className="mod-total-val">{totalQ.toFixed(2)} kN/m²</span>
+          </div>
+        </div>
+      )}
+
+      {tab === 'clim' && (
+        <div className="mod-card">
+          <div className="mod-card-title"><span className="mod-card-dot" />Charges climatiques</div>
+
+          <div className="mod-charge-row">
+            <div className="mod-charge-name">Vent (pression de référence q<sub>ref</sub>)</div>
+            <a href="/vent" className="mod-btn-link">
+              🌬 Calcul du vent — EC1-1-4
+            </a>
+          </div>
+
+          <div className="mod-charge-row">
+            <div className="mod-charge-name">Variation thermique ΔT</div>
+            <input
+              type="range"
+              className="mod-charge-slider"
+              min={-40} max={60} step={1} value={temp}
+              onChange={e => setTemp(parseFloat(e.target.value))}
+            />
+            <div className="mod-charge-val">{temp > 0 ? '+' : ''}{temp} °C</div>
+          </div>
+
+          <div className="mod-total-row">
+            <span>ΔT retenu :</span>
+            <span className="mod-total-val">{temp > 0 ? '+' : ''}{temp} °C</span>
           </div>
         </div>
       )}
