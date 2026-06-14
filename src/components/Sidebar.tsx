@@ -7,6 +7,7 @@ const modules = [
   { to: '/calcul',      icon: '∑', label: 'Calcul structurel' },
   { to: '/flambement', icon: 'χ', label: 'Flambement EC3',    badge: 'EC3', badgeClass: 'blue' },
   { to: '/optimisation',icon: '◈', label: 'Optimisation',          badge: 'AI' },
+  { to: '/db-ciag',    icon: '⊞', label: 'DB CIAG' },
 ];
 
 export default function Sidebar() {

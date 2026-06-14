@@ -1,6 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
 import Chart from 'chart.js/auto';
-import '../styles/proposition.css';
 
 interface OptPoint {
   l: number;

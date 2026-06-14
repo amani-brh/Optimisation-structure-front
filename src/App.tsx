@@ -10,6 +10,7 @@ import RSAExportPage from './pages/RSAExportPage';
 import OptimisationPage from './pages/OptimisationPage';
 import PropositionPage from './pages/PropositionPage';
 import FlambementPage from './pages/FlambementPage';
+import DBCIAGPage from './pages/DBCIAGPage';
 import Sidebar from './components/Sidebar';
 
 type Theme = 'light' | 'dark';
@@ -122,6 +123,7 @@ export default function App() {
             <Route path="/optimisation" element={<OptimizationsPage />} />
             <Route path="/proposition" element={<PropositionPage />} />
             <Route path="/flambement" element={<FlambementPage />} />
+            <Route path="/db-ciag" element={<DBCIAGPage />} />
             <Route path="*" element={<Navigate to="/optimisations" replace />} />
           </Routes>
         </main>
