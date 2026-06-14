@@ -16,27 +16,19 @@ const PORT = 3001;
 // ═══════════════════════════════════════════════════════════════
 const TASKS = {
   'mcp-server': {
-    cwd: 'C:\\Users\\kunha\\source\\repos\\AmaniRobot\\MCP Robot',
+    cwd: '.',
     cmd: 'python',
-    args: ['server.py'],
+    args: ['scripts/mcp_server.py', '--selftest'],
   },
   'extract-robot': {
-    cwd: 'C:\\Users\\ameni\\Videos\\Robot Python API',
+    cwd: '.',
     cmd: 'python',
-    args: ['extract_poids.py'],
+    args: ['scripts/extract_robot.py'],
   },
   'open-robot': {
     cwd: '.',
     cmd: 'python',
-    args: [
-      '-c',
-      [
-        'import win32com.client as com',
-        'robot = com.Dispatch("Robot.Application")',
-        'robot.Visible = True',
-        'print("Connected to Autodesk Robot")',
-      ].join('; '),
-    ],
+    args: ['scripts/open_robot.py'],
   },
 };
 
@@ -68,7 +60,13 @@ const server = http.createServer((req, res) => {
     const id = url.pathname.slice('/status/'.length);
     const proc = running[id];
     if (!proc) return json(res, 200, { status: 'idle' });
-    return json(res, 200, { status: proc.exitCode === null ? 'running' : proc.exitCode === 0 ? 'done' : 'error', exitCode: proc.exitCode });
+    return json(res, 200, { 
+      status: proc.exitCode === null ? 'running' : proc.exitCode === 0 ? 'done' : 'error', 
+      exitCode: proc.exitCode,
+      stdout: proc.stdout_buf,
+      stderr: proc.stderr_buf,
+      pid: proc.pid,
+    });
   }
 
   // POST /run/:id
@@ -82,25 +80,59 @@ const server = http.createServer((req, res) => {
       return json(res, 200, { status: 'already-running', pid: running[id].pid });
     }
 
-    console.log(`[run] ${id}: ${task.cmd} ${task.args.join(' ')}  (cwd: ${task.cwd})`);
+    // Read request body for optional arguments
+    let body = '';
+    req.on('data', chunk => { body += chunk.toString(); });
+    req.on('end', () => {
+      let extraArgs = [];
+      try {
+        if (body) {
+          const data = JSON.parse(body);
+          if (data.args && Array.isArray(data.args)) {
+            extraArgs = data.args;
+          }
+        }
+      } catch (e) {
+        // Ignore parse errors, use empty extra args
+      }
 
-    const proc = spawn(task.cmd, task.args, {
-      cwd: task.cwd,
-      shell: true,
-      stdio: 'pipe',
+      // Merge task args with extra args
+      const allArgs = [...task.args, ...extraArgs];
+      console.log(`[run] ${id}: ${task.cmd} ${allArgs.join(' ')}  (cwd: ${task.cwd})`);
+
+      const proc = spawn(task.cmd, allArgs, {
+        cwd: task.cwd,
+        shell: false,
+        stdio: 'pipe',
+      });
+
+      proc.exitCode = null;
+      proc.stdout_buf = '';
+      proc.stderr_buf = '';
+      running[id] = proc;
+
+      proc.stdout.on('data', d => { 
+        const text = d.toString();
+        process.stdout.write(`[${id}] ${text}`);
+        proc.stdout_buf += text;
+        if (proc.stdout_buf.length > 2048) proc.stdout_buf = proc.stdout_buf.slice(-2048);
+      });
+      proc.stderr.on('data', d => { 
+        const text = d.toString();
+        process.stderr.write(`[${id}] ${text}`);
+        proc.stderr_buf += text;
+        if (proc.stderr_buf.length > 2048) proc.stderr_buf = proc.stderr_buf.slice(-2048);
+      });
+      proc.on('close', code => {
+        console.log(`[${id}] exited with code ${code}`);
+        if (proc.stderr_buf) console.log(`[${id}] stderr: ${proc.stderr_buf}`);
+        if (proc.stdout_buf) console.log(`[${id}] stdout: ${proc.stdout_buf}`);
+        proc.exitCode = code;
+      });
+
+      json(res, 200, { status: 'started', pid: proc.pid });
     });
-
-    proc.exitCode = null;
-    running[id] = proc;
-
-    proc.stdout.on('data', d => process.stdout.write(`[${id}] ${d}`));
-    proc.stderr.on('data', d => process.stderr.write(`[${id}] ${d}`));
-    proc.on('close', code => {
-      console.log(`[${id}] exited with code ${code}`);
-      proc.exitCode = code;
-    });
-
-    return json(res, 200, { status: 'started', pid: proc.pid });
+    return;
   }
 
   // POST /stop/:id
