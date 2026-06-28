@@ -1,17 +1,19 @@
 import { useState } from 'react';
 
-type TabId = 'perm' | 'expl' | 'combis' | 'clim';
+type TabId = 'perm' | 'expl' | 'combis' | 'clim' | 'catalogue';
 
 export default function ChargementPage() {
   const [tab, setTab] = useState<TabId>('perm');
   const [couv, setCouv]   = useState(0.15);
+  const [pds, setPds]   = useState(0.15);
   const [bard, setBard]   = useState(0.10);
   const [charp, setCharp] = useState(0.20);
   const [entr, setEntr]   = useState(0.50);
   const [pous, setPous]   = useState(0.20);
   const [util, setUtil]   = useState(1.00);
 
-  const [temp, setTemp]   = useState(25);
+  const [tempPlus, setTempPlus]   = useState(25);
+  const [tempMinus, setTempMinus] = useState(-15);
 
   const totalG = couv + bard + charp;
   const totalQ = entr + pous + util;
@@ -35,13 +37,19 @@ export default function ChargementPage() {
         <div className={`mod-tab${tab === 'combis' ? ' active' : ''}`} onClick={() => setTab('combis')}>
           🔗 Combinaisons EC0
         </div>
-
+        <div className={`mod-tab${tab === 'catalogue' ? ' active' : ''}`} onClick={() => setTab('catalogue')}>
+          Catalogue
+        </div>
       </div>
 
       {tab === 'perm' && (
         <div className="mod-card">
           <div className="mod-card-title"><span className="mod-card-dot" />Charges permanentes G</div>
 
+          <div className="mod-charge-row">
+            <div className="mod-charge-name">Poids Propre </div>
+            
+          </div>
           {[
             { label: 'Couverture',  val: couv,  set: setCouv,  min: 0.05, max: 0.5,  step: 0.05 },
             { label: 'Bardage',     val: bard,  set: setBard,  min: 0.05, max: 0.4,  step: 0.05 },
@@ -72,7 +80,7 @@ export default function ChargementPage() {
           {[
             { label: 'Entretien',          val: entr, set: setEntr, min: 0.25, max: 2.0, step: 0.25 },
             { label: 'Poussière ',  val: pous, set: setPous, min: 0.0,  max: 1.0, step: 0.1  },
-            { label: 'Charge utile toiture',val: util, set: setUtil, min: 0.25, max: 3.0, step: 0.25 },
+            { label: 'Suspendu',val: util, set: setUtil, min: 0.25, max: 3.0, step: 0.25 },
           ].map(({ label, val, set, min, max, step }) => (
             <div className="mod-charge-row" key={label}>
               <div className="mod-charge-name">{label}</div>
@@ -98,26 +106,37 @@ export default function ChargementPage() {
           <div className="mod-card-title"><span className="mod-card-dot" />Charges climatiques</div>
 
           <div className="mod-charge-row">
-            <div className="mod-charge-name">Vent (pression de référence q<sub>ref</sub>)</div>
+            <div className="mod-charge-name">Vent </div>
             <a href="/vent" className="mod-btn-link">
               🌬 Calcul du vent — EC1-1-4
             </a>
           </div>
 
           <div className="mod-charge-row">
-            <div className="mod-charge-name">Variation thermique ΔT</div>
+            <div className="mod-charge-name">Variation thermique ΔT+</div>
             <input
               type="range"
               className="mod-charge-slider"
-              min={-40} max={60} step={1} value={temp}
-              onChange={e => setTemp(parseFloat(e.target.value))}
+              min={0} max={60} step={1} value={tempPlus}
+              onChange={e => setTempPlus(parseFloat(e.target.value))}
             />
-            <div className="mod-charge-val">{temp > 0 ? '+' : ''}{temp} °C</div>
+            <div className="mod-charge-val">{tempPlus > 0 ? '+' : ''}{tempPlus} °C</div>
+          </div>
+
+          <div className="mod-charge-row">
+            <div className="mod-charge-name">Variation thermique ΔT-</div>
+            <input
+              type="range"
+              className="mod-charge-slider"
+              min={-40} max={0} step={1} value={tempMinus}
+              onChange={e => setTempMinus(parseFloat(e.target.value))}
+            />
+            <div className="mod-charge-val">{tempMinus > 0 ? '+' : ''}{tempMinus} °C</div>
           </div>
 
           <div className="mod-total-row">
             <span>ΔT retenu :</span>
-            <span className="mod-total-val">{temp > 0 ? '+' : ''}{temp} °C</span>
+            <span className="mod-total-val">{tempPlus > 0 ? '+' : ''}{tempPlus} °C / {tempMinus > 0 ? '+' : ''}{tempMinus} °C</span>
           </div>
         </div>
       )}
@@ -127,11 +146,11 @@ export default function ChargementPage() {
           <div className="mod-card-title"><span className="mod-card-dot" />Combinaisons d'actions (EC0)</div>
 
           <div className="mod-formula">
-            <strong>ELU :</strong> γ_G · G_k + γ_Q · Q_k + γ_Q · ψ₀ · W_k
+            <strong>ELU :</strong> <br /> 1.35 G + 1.5 Q <br /> 1 G + 1.5 W&#8593; <br/> 1.35G + 1.5Q + 0.9 W &#8595;  <br /> 1.35G + 1.5W &#8595;
             <br /><span className="mod-formula-comment">// γ_G = 1.35 ; γ_Q = 1.50 ; ψ₀ = 0.6 (vent)</span>
           </div>
           <div className="mod-formula">
-            <strong>ELS :</strong> G_k + Q_k + ψ₁ · W_k
+            <strong>ELS :</strong><br /> 1.00 G + 1.00 Q <br /> 1.00 G + 1.00 W <br />
             <br /><span className="mod-formula-comment">// ψ₁ = 0.5 (vent, bâtiments)</span>
           </div>
 
@@ -154,17 +173,39 @@ export default function ChargementPage() {
                 <td><span className="mod-tag mod-tag-green">Défini</span></td>
               </tr>
               <tr>
-                <td>ELS</td><td>1.00</td><td>1.00</td><td>0.50</td>
+                <td>ELS</td><td>1.00</td><td>1.00</td><td>1.00</td>
                 <td className="mod-val-accent">Service</td>
                 <td><span className="mod-tag mod-tag-blue">Calculé</span></td>
               </tr>
-              <tr>
-                <td>Accidentel</td><td>1.00</td><td>—</td><td>—</td>
-                <td className="mod-val-accent">À définir</td>
-                <td><span className="mod-tag mod-tag-amber">En attente</span></td>
-              </tr>
+              
             </tbody>
           </table>
+        </div>
+      )}
+
+      {tab === 'catalogue' && (
+        <div className="mod-card">
+          <div className="mod-card-title">
+            <span className="mod-card-dot" />Catalogue
+          </div>
+
+          <div className="mod-charge-row">
+            <a href="/Catalogue-Tunisco.pdf" target="_blank" rel="noreferrer" className="mod-btn-link">
+              📄 Catalogue Tunisco
+            </a>
+          </div>
+
+          <div className="mod-charge-row">
+            <a href="/catalogue.pdf" target="_blank" rel="noreferrer" className="mod-btn-link">
+              📄 catalogue
+            </a>
+          </div>
+
+          <div className="mod-charge-row">
+            <a href="/catalogue maghrbia.pdf" target="_blank" rel="noreferrer" className="mod-btn-link">
+              📄 catalogue maghrbia
+            </a>
+          </div>
         </div>
       )}
 
