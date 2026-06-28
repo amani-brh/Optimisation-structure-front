@@ -187,14 +187,14 @@ export default function HomePage() {
               Fiche du projet
             </div>
 
-            {[
+            {([
               { label: 'Étudiante', value: 'Amani Barhoumi' },
               { label: 'Spécialité', value: 'Génie Civil' },
               { label: 'Promotion', value: '2025 / 2026' },
               { label: 'Établissement', value: 'ENIT' },
               { label: 'Entreprise', value: 'CIAG Concept' },
               { label: 'Type de stage', value: 'PFE — Stage fin d\'études' },
-            ].map(({ label, value }) => (
+            ]).map(({ label, value }) => (
               <div key={label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 12, padding: '5px 0', borderBottom: '1px solid var(--bd)' }}>
                 <span style={{ color: 'var(--tx3)', fontSize: 11, fontFamily: 'var(--fm)', whiteSpace: 'nowrap' }}>{label}</span>
                 <span style={{ color: 'var(--tx)', fontSize: 12, fontWeight: 600, textAlign: 'right' }}>{value}</span>
@@ -396,6 +396,38 @@ export default function HomePage() {
             fullCmd={`python -c "import win32com.client as com; robot = com.Dispatch('Robot.Application'); robot.Visible = True"`}
           />
         </div>
+        <div style={{
+        marginTop: '0.75rem',
+        padding: '0.9rem 1rem',
+        border: '1px solid var(--bd)',
+        borderRadius: 'var(--r2)',
+        background: 'var(--bg3)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: '0.75rem',
+        flexWrap: 'wrap',
+      }}>
+        <div style={{ fontSize: 12, color: 'var(--tx2)', fontWeight: 600 }}>
+          📊 Fichier Excel de travail
+        </div>
+        <a
+          href="/PFE%20Amani%20BARHOUMI%20-CIAG%20Concept20.xlsm"
+          target="_blank"
+          rel="noreferrer"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+            color: 'var(--br)',
+            textDecoration: 'none',
+            fontWeight: 600,
+            fontSize: 12,
+          }}
+        >
+          Ouvrir PFE Amani BARHOUMI - CIAG Concept20.xlsm
+        </a>
+      </div>
       </div>
 
       {/* ── Footer strip ── */}
@@ -418,6 +450,7 @@ export default function HomePage() {
           <span>RobotOptim PRO v1.0.0</span>
         </div>
       </div>
+      
     </div>
   );
 }
